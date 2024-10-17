@@ -13,6 +13,7 @@ abstract contract HelpersConfig is Script, Accounts {
         Account guardian;
         Account guardianDefaultNominee;
         uint256 deployerPrivateKey;
+        string salt;
         address ethPriceFeed;
         address automationRegistry;
     }
@@ -48,6 +49,7 @@ abstract contract HelpersConfig is Script, Accounts {
             guardian: guardian1,
             guardianDefaultNominee: guardianDefaultNominee,
             deployerPrivateKey: vm.envUint("PRIVATE_KEY"),
+            salt: "123",
             ethPriceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306,
             automationRegistry: 0x86EFBD0b6736Bed994962f9797049422A3A8E8Ad
         });

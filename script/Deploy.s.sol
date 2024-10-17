@@ -52,28 +52,28 @@ contract Deploy is Script, BaseSetup, HelpersConfig {
     function deployContracts() internal {
         entrypoint = IEntryPoint(0x0000000071727De22E5E9d8BAf0edAc6f37da032);
         // ERC7484 Registry for ERC7579
-        registry = new MockRegistry{ salt: "12345" }();
+        registry = new MockRegistry{ salt: config.salt }();
 
         // ERC7579 Adapter for Safe
-        tsSafe = new TokenshieldSafe7579{ salt: "12345" }();
-        launchpad = new Safe7579Launchpad{ salt: "12345" }(address(entrypoint), IERC7484(address(registry)));
-        singleton = new Safe{ salt: "12345" }();
-        safeProxyFactory = new SafeProxyFactory{ salt: "12345" }();
+        tsSafe = new TokenshieldSafe7579{ salt: config.salt }();
+        launchpad = new Safe7579Launchpad{ salt: config.salt }(address(entrypoint), IERC7484(address(registry)));
+        singleton = new Safe{ salt: config.salt }();
+        safeProxyFactory = new SafeProxyFactory{ salt: config.salt }();
         // Setting Up Guard and guard Setter
-        guardSetter = new BlockGuardSetter{ salt: "12345" }();
-        blockSafeGuard = new BlockSafeGuard{ salt: "12345" }();
+        guardSetter = new BlockGuardSetter{ salt: config.salt }();
+        blockSafeGuard = new BlockSafeGuard{ salt: config.salt }();
 
         // Create Kernal
         kernal = new TokenshieldKernal(defaultAdmin.addr, mfaSetterAdmin.addr, moduleSetter.addr);
 
         // Create Guardian Validator
-        defaultValidator = new GuardianValidator{ salt: "12345" }(address(kernal));
+        defaultValidator = new GuardianValidator{ salt: config.salt }(address(kernal));
 
         // create executor
-        defaultExecutor = new RecoveryModule{ salt: "12345" }(address(kernal));
+        defaultExecutor = new RecoveryModule{ salt: config.salt }(address(kernal));
 
         // setExecutors(address(defaultExecutor));
 
-        target = new MockERC20Target{ salt: "12345" }();
+        target = new MockERC20Target{ salt: config.salt }();
     }
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL3
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 import { AccessControlEnumerable } from "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
 import "src/utils/Events.sol";

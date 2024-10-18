@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 import { BaseSetup } from "./BaseSetup.t.sol";
 import { ExecutionLib } from "erc7579/lib/ExecutionLib.sol";

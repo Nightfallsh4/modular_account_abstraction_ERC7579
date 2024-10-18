@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 import { Guard } from "@safe-global/safe-contracts/contracts/base/GuardManager.sol";
 import "@safe-global/safe-contracts/contracts/common/Enum.sol";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-v3
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 import { Script } from "forge-std/Script.sol";
 import { MockRegistry } from "safe7579/test/mocks/MockRegistry.sol";
@@ -33,11 +33,11 @@ contract Deploy is Script, BaseSetup, HelpersConfig {
 
         // Initialise GuardianValidator
         (address[] memory guardians, bool[] memory isEnabled) = getGuardiansList(address(defaultValidator), config.guardian);
-        
+
         console.log(mfaSetterAdmin.addr);
         console.log(mfaSetter.addr);
         console.log(moduleSetter.addr);
-        
+
         vm.broadcast(mfaSetterAdmin.key);
         kernal.grantRole(MFA_SETTER, mfaSetter.addr);
 

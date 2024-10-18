@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 import { IExecutor } from "erc7579/interfaces/IERC7579Module.sol";
 import "erc7579/interfaces/IERC7579Module.sol";

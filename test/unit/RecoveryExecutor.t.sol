@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 import { BaseSetup } from "./BaseSetup.t.sol";
 import { ISafe2 as ISafe } from "src/interfaces/ISafe2.sol";

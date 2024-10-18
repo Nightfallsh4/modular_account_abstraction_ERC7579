@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL3
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 bytes32 constant MFA_SETTER = keccak256("TOKENSHIELD_MFA_SETTER_ROLE"); // @note Sets the guardian for the accounts
 bytes32 constant MFA_SETTER_ADMIN = keccak256("TOKENSHIELD_MFA_SETTER_ROLE_ADMIN"); // @note Admin for the MFA_Setter

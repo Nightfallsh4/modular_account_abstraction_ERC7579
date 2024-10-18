@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-v3
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 import { Test } from "forge-std/Test.sol";
 
@@ -14,6 +14,8 @@ import { TokenshieldSafe7579 } from "../../src/TokenshieldSafe7579.sol";
 import { Safe7579Launchpad } from "safe7579/src/Safe7579Launchpad.sol";
 
 import { GuardianValidator } from "src/modules/GuardianValidator.sol";
+
+import { PasskeyValidator } from "src/modules/PasskeyValidator.sol";
 import { BlockGuardSetter } from "src/guard/BlockGuardSetter.sol";
 import { BlockSafeGuard } from "src/guard/BlockSafeGuard.sol";
 import { IEntryPoint } from "account-abstraction/interfaces/IEntryPoint.sol";
@@ -32,11 +34,14 @@ import { ExecutionLib } from "erc7579/lib/ExecutionLib.sol";
 import { ModeLib } from "erc7579/lib/ModeLib.sol";
 import { IERC7579Account, Execution } from "erc7579/interfaces/IERC7579Account.sol";
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import { P256 } from "@safe-global/safe-modules/modules/passkey/contracts/libraries/P256.sol";
 
 import { TokenshieldKernal } from "src/TokenshieldKernal.sol";
 import { SignatureUtils } from "test/unit/utils/SignatureUtils.t.sol";
 import { Accounts } from "test/unit/utils/Accounts.t.sol";
 import "src/utils/Roles.sol";
+import { SafeWebAuthnSignerFactory } from
+    "@safe-global/safe-modules/modules/passkey/contracts/SafeWebAuthnSignerFactory.sol";
 
 contract BaseSetup is Test, SignatureUtils, Accounts {
     // Safe
@@ -55,12 +60,19 @@ contract BaseSetup is Test, SignatureUtils, Accounts {
     RecoveryModule defaultExecutor;
     MockRegistry registry;
     TokenshieldKernal kernal;
+    SafeWebAuthnSignerFactory passkeySignerFactory;
+    PasskeyValidator passkeyValidator;
 
     // Target
     MockERC20Target target;
 
     // UserAccount
     TokenshieldSafe7579 userAccount;
+
+    uint256 passkeyX = 0xcbfc61da834cb335c613b502c28ac18a95153b317b23386dcd97349530f8bcb4;
+    uint256 passkeyY = 0xa37a60f2e71c7c3ff1e901bc59949930d02e02a0b3da04ad4a2fd826718db508;
+    P256.Verifiers verifiers =
+        P256.Verifiers.wrap(uint176(0x000000000000000000000000445a0683e494ea0c5af3e83c5159fbe47cf9e765));
 
     function setUpEssentialContracts() internal virtual {
         // Setting Up
@@ -78,6 +90,8 @@ contract BaseSetup is Test, SignatureUtils, Accounts {
         // ERC7579 Adapter for Safe
         tsSafe = new TokenshieldSafe7579();
         launchpad = new Safe7579Launchpad(address(entrypoint), IERC7484(address(registry)));
+
+        passkeySignerFactory = new SafeWebAuthnSignerFactory();
 
         // Setting Up Guard and guard Setter
         guardSetter = new BlockGuardSetter();
@@ -173,6 +187,9 @@ contract BaseSetup is Test, SignatureUtils, Accounts {
         // Create Guardian Validator
         defaultValidator = new GuardianValidator(address(kernal));
 
+        // Create Passkey Module
+        passkeyValidator = new PasskeyValidator(address(kernal), address(passkeySignerFactory));
+
         // Initialise GuardianValidator
         setGuardiansForGuardianValidator(address(defaultValidator), guardian1);
 
@@ -217,9 +234,16 @@ contract BaseSetup is Test, SignatureUtils, Accounts {
             ModuleInit[] memory hooks
         )
     {
-        validators = new ModuleInit[](1);
+        validators = new ModuleInit[](2);
+
+        // Guardian Validator
         bytes memory validatorInitData = abi.encode(_owner);
         validators[0] = ModuleInit({ module: address(defaultValidator), initData: validatorInitData });
+
+        // Passkey Validator
+        bytes memory passkeyInitData = abi.encode(passkeyX, passkeyY, verifiers);
+        validators[1] = ModuleInit({ module: address(passkeyValidator), initData: passkeyInitData });
+
         // console.log("Validator Init Data- ");
         // console.logBytes(validatorInitData);
         executors = new ModuleInit[](1);

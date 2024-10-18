@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 import { ISafe } from "safe7579/src/interfaces/ISafe.sol";
 

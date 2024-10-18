@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL3
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 import { ModeCode } from "safe7579/src/lib/ModeLib.sol";
 

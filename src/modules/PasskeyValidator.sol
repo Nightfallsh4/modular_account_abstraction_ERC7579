@@ -1,20 +1,29 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 import { IValidator } from "erc7579/interfaces/IERC7579Module.sol";
 import { PackedUserOperation } from "module-bases/external/ERC4337.sol";
 import { ITokenshieldKernal } from "src/interfaces/ITokenshieldKernal.sol";
+import { SafeWebAuthnSignerProxy } from
+    "@safe-global/safe-modules/modules/passkey/contracts/SafeWebAuthnSignerProxy.sol";
+import { SafeWebAuthnSignerFactory } from
+    "@safe-global/safe-modules/modules/passkey/contracts/SafeWebAuthnSignerFactory.sol";
+import { P256 } from "@safe-global/safe-modules/modules/passkey/contracts/libraries/P256.sol";
 
 contract PasskeyValidator is IValidator {
     type Validation is uint256;
 
     ITokenshieldKernal immutable kernal;
+    SafeWebAuthnSignerFactory immutable signerFactory;
 
     Validation internal constant VALIDATION_SUCCESS = Validation.wrap(0);
     Validation internal constant VALIDATION_FAILED = Validation.wrap(1);
 
-    constructor(address _kernal) {
+    mapping(address account => SafeWebAuthnSignerProxy passkeySigner) public accountToPasskeySigner;
+
+    constructor(address _kernal, address _signerFactory) {
         kernal = ITokenshieldKernal(_kernal);
+        signerFactory = SafeWebAuthnSignerFactory(_signerFactory);
     }
 
     /**
@@ -23,10 +32,13 @@ contract PasskeyValidator is IValidator {
      */
     function onInstall(bytes calldata data) external override {
         // Check if installed already
+        SafeWebAuthnSignerProxy passkeyVerifier = accountToPasskeySigner[msg.sender];
+        (uint256 x, uint256 y, P256.Verifiers verifiers) = abi.decode(data, (uint256, uint256, P256.Verifiers));
 
-        // If not, deploy SafePasskeySignerProxy x and y coordinates
-
-        // If
+        if (address(passkeyVerifier) == address(0)) {
+            accountToPasskeySigner[msg.sender] =
+                SafeWebAuthnSignerProxy(payable(signerFactory.createSigner(x, y, verifiers)));
+        }
     }
 
     function onUninstall(bytes calldata data) external override { }
@@ -42,7 +54,9 @@ contract PasskeyValidator is IValidator {
         external
         override
         returns (uint256)
-    { }
+    {
+        return Validation.unwrap(VALIDATION_SUCCESS);
+    }
 
     function isValidSignatureWithSender(
         address sender,

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.25;
+pragma solidity 0.8.26;
 
 error Tokenshield_Validator_Guardian_InValidThreshold(uint256 expectedThreshold, uint256 actualThreshold);
 error Tokenshield_ZeroAddress();

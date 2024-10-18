@@ -3,8 +3,8 @@ pragma solidity ^0.8.19;
 
 import { Script } from "forge-std/Script.sol";
 import { Accounts } from "test/unit/utils/Accounts.t.sol";
-abstract contract HelpersConfig is Script, Accounts {
 
+abstract contract HelpersConfig is Script, Accounts {
     struct ChainConfig {
         Account defaultAdmin;
         Account mfaSetterAdmin;
@@ -13,7 +13,7 @@ abstract contract HelpersConfig is Script, Accounts {
         Account guardian;
         Account guardianDefaultNominee;
         uint256 deployerPrivateKey;
-        string salt;
+        bytes32 salt;
         address ethPriceFeed;
         address automationRegistry;
     }
@@ -45,11 +45,11 @@ abstract contract HelpersConfig is Script, Accounts {
             defaultAdmin: defaultAdmin,
             mfaSetterAdmin: mfaSetterAdmin,
             mfaSetter: mfaSetter,
-            moduleSetter:  moduleSetter,
+            moduleSetter: moduleSetter,
             guardian: guardian1,
             guardianDefaultNominee: guardianDefaultNominee,
             deployerPrivateKey: vm.envUint("PRIVATE_KEY"),
-            salt: "123",
+            salt: keccak256(abi.encode("123")),
             ethPriceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306,
             automationRegistry: 0x86EFBD0b6736Bed994962f9797049422A3A8E8Ad
         });

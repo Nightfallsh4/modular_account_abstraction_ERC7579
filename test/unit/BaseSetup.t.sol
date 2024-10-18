@@ -37,7 +37,7 @@ import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import { P256 } from "@safe-global/safe-modules/modules/passkey/contracts/libraries/P256.sol";
 
 import { TokenshieldKernal } from "src/TokenshieldKernal.sol";
-import { SignatureUtils } from "test/unit/utils/SignatureUtils.t.sol";
+import { SignatureTestUtils } from "test/unit/utils/SignatureTestUtils.t.sol";
 import { Accounts } from "test/unit/utils/Accounts.t.sol";
 import "src/utils/Roles.sol";
 import { SafeWebAuthnSignerFactory } from
@@ -69,8 +69,8 @@ contract BaseSetup is Test, SignatureUtils, Accounts {
     // UserAccount
     TokenshieldSafe7579 userAccount;
 
-    uint256 passkeyX = 0xcbfc61da834cb335c613b502c28ac18a95153b317b23386dcd97349530f8bcb4;
-    uint256 passkeyY = 0xa37a60f2e71c7c3ff1e901bc59949930d02e02a0b3da04ad4a2fd826718db508;
+    uint256 passkeyX = 0xf006b762fdc2709d399bcc379c024c5d4fe0ed55d1e95e689e1085b5d0b71087;
+    uint256 passkeyY = 0xd324cfcee73956c51ab034fb7a40d07a09310050bf7d0e078412102608ef0371;
     P256.Verifiers verifiers =
         P256.Verifiers.wrap(uint176(0x000000000000000000000000445a0683e494ea0c5af3e83c5159fbe47cf9e765));
 

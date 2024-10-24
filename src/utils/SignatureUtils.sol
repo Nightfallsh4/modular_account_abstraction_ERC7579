@@ -20,7 +20,7 @@ abstract contract SignatureUtils {
     string domainVersion = "1";
 
 
-    function getDigest(PackedUserOperation memory _userOp, address guardianValidator) internal returns (bytes32 digest) {
+    function getDigest(PackedUserOperation memory _userOp, address guardianValidator) internal view returns (bytes32 digest) {
         UnsignedUserOperation memory unsignedUserOp = getUnsignedUserOp(_userOp);
         // // Get the EIP712 Hash
         bytes32 transactionHash = getTransactionHash(unsignedUserOp);

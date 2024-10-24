@@ -13,6 +13,8 @@ import { UnsignedUserOperation } from "../utils/DataTypes.sol";
 import { IPasskeySigner } from "src/interfaces/IPasskeySigner.sol";
 import { SignatureUtils } from "src/utils/SignatureUtils.sol";
 
+import { console } from "forge-std/console.sol";
+
 contract PasskeyValidator is IValidator, SignatureUtils {
     type Validation is uint256;
 
@@ -35,12 +37,11 @@ contract PasskeyValidator is IValidator, SignatureUtils {
      */
     function onInstall(bytes calldata data) external override {
         // Check if installed already
-        SafeWebAuthnSignerProxy passkeyVerifier = accountToPasskeySigner[msg.sender];
+        IPasskeySigner passkeyVerifier = accountToPasskeySigner[msg.sender];
         (uint256 x, uint256 y, P256.Verifiers verifiers) = abi.decode(data, (uint256, uint256, P256.Verifiers));
 
         if (address(passkeyVerifier) == address(0)) {
-            accountToPasskeySigner[msg.sender] =
-                IPasskeySigner(signerFactory.createSigner(x, y, verifiers));
+            accountToPasskeySigner[msg.sender] = IPasskeySigner(signerFactory.createSigner(x, y, verifiers));
         }
     }
 
@@ -73,18 +74,17 @@ contract PasskeyValidator is IValidator, SignatureUtils {
     { }
 
     function checkSignature(PackedUserOperation calldata _userOp) public view returns (address signer) {
-
         // // Get the EIP712 Hash
         bytes32 digest = getDigest(_userOp, address(this));
-        // (bytes32 r1, bytes32 s1, uint8 v1, bytes32 r2, bytes32 s2, uint8 v2) =
-        //     abi.decode(_userOp.signature, (bytes32, bytes32, uint8, bytes32, bytes32, uint8));
-        (uint8 v1, bytes32 r1, bytes32 s1) = signatureSplit(_userOp.signature, 0);
-        (uint8 v2, bytes32 r2, bytes32 s2) = signatureSplit(_userOp.signature, 1);
 
-        (signer,,) = ECDSA.tryRecover(digest, v1, r1, s1);
-        (address guardianSigner,,) = ECDSA.tryRecover(digest, v2, r2, s2);
+        IPasskeySigner passkeySigner = accountToPasskeySigner[_userOp.sender];
+
+        bytes4 magicValue = passkeySigner.isValidSignature(digest, _userOp.signature);
+
+        // assert(magicValue == );
         // console.logBytes32(transactionHash);
-        // console.logBytes32(digest);
+        console.logBytes32(digest);
+        console.logBytes4(magicValue);
         // console.logBytes32(r1);
         // console.logBytes32(s1);
         // console.logUint(v1);
@@ -92,30 +92,5 @@ contract PasskeyValidator is IValidator, SignatureUtils {
         // console.logBytes32(r2);
         // console.logBytes32(s2);
         // console.logUint(v2);
-
-        if (signer == address(0) || guardianSigner == address(0)) {
-            // console.log(signer);
-            // console.log(guardianSigner);
-            revert Tokenshield_InvalidSignature(signer, guardianSigner);
-        }
-        if (!kernal.isApprovedGuardian(guardianSigner)) revert Tokenshield_InvalidGuardian();
-    }
-
-    function getTransactionHash(UnsignedUserOperation memory _unsignedUserOp) public pure returns (bytes32) {
-        return keccak256(
-            abi.encode(
-                keccak256(
-                    "UnsignedUserOperation(address sender,uint256 nonce,bytes initCode,bytes callData,bytes32 accountGasLimits,uint256 preVerificationGas,bytes32 gasFees,bytes paymasterAndData)"
-                ),
-                _unsignedUserOp.sender,
-                _unsignedUserOp.nonce,
-                keccak256(bytes(_unsignedUserOp.initCode)),
-                keccak256(bytes(_unsignedUserOp.callData)),
-                _unsignedUserOp.accountGasLimits,
-                _unsignedUserOp.preVerificationGas,
-                _unsignedUserOp.gasFees
-            )
-        );
-        // keccak256(bytes(_unsignedUserOp.paymasterAndData))
     }
 }

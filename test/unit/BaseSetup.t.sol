@@ -43,7 +43,7 @@ import "src/utils/Roles.sol";
 import { SafeWebAuthnSignerFactory } from
     "@safe-global/safe-modules/modules/passkey/contracts/SafeWebAuthnSignerFactory.sol";
 
-contract BaseSetup is Test, SignatureUtils, Accounts {
+contract BaseSetup is Test, SignatureTestUtils, Accounts {
     // Safe
     Safe singleton;
     SafeProxyFactory safeProxyFactory;
